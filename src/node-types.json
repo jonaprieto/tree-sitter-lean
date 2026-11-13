@@ -30297,21 +30297,6 @@
     "fields": {}
   },
   {
-    "type": "str_lit",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "escape_sequence",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "strict_implicit_binder",
     "named": true,
     "fields": {
@@ -38224,6 +38209,10 @@
   {
     "type": "sorry",
     "named": false
+  },
+  {
+    "type": "str_lit",
+    "named": true
   },
   {
     "type": "structure",
