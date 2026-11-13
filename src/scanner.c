@@ -386,9 +386,26 @@ static bool scan_layout(struct Scanner *scanner, TSLexer *lexer,
 
 /* ---------- dispatch ----------------------------------------------------- */
 
+static void skip_whitespace(TSLexer *lexer) {
+  while (lexer->lookahead == ' '
+      || lexer->lookahead == '\t'
+      || lexer->lookahead == '\r'
+      || lexer->lookahead == '\n') {
+    skip(lexer);
+  }
+}
+
 static bool scan(struct Scanner *scanner, TSLexer *lexer,
                  const bool *valid_symbols) {
-  if (valid_symbols[ERROR_SENTINEL]) return false;
+  /* Error recovery marks every token valid. Layout and identifiers would
+     only be guesses there, but a comment is a comment wherever it appears:
+     lexing it keeps the quotes inside a docstring after a parse error from
+     opening strings that run to the end of the file. */
+  if (valid_symbols[ERROR_SENTINEL]) {
+    skip_whitespace(lexer);
+    return lexer->lookahead == '/'
+        && scan_block_or_doc_comment(lexer, valid_symbols);
+  }
 
   /* Layout tokens have to be considered before the whitespace skip —
      they're triggered by newlines and leading-line indentation. */
@@ -398,12 +415,7 @@ static bool scan(struct Scanner *scanner, TSLexer *lexer,
 
   /* Skip plain whitespace so the rest of the scanner's view matches
      the lexer's. */
-  while (lexer->lookahead == ' '
-      || lexer->lookahead == '\t'
-      || lexer->lookahead == '\r'
-      || lexer->lookahead == '\n') {
-    skip(lexer);
-  }
+  skip_whitespace(lexer);
 
   /* Norm bars `‖ … ‖`. The same glyph opens and closes, disambiguated
      by parser context: prefer CLOSE (only valid once a norm is open and

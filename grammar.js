@@ -1695,14 +1695,15 @@ export default grammar({
       '\'',
     ),
 
-    str_lit: $ => seq(
+    /* One token, escapes included: as a rule of separate quote and content
+       tokens, error recovery could drop an opening quote on its own and pair
+       the closing one with the next string's opening quote, turning the code
+       between them into a string, often to the end of the file. */
+    str_lit: _ => token(seq(
       '"',
-      repeat(choice(
-        $.escape_sequence,
-        token.immediate(prec(1, /[^"\\]+/)),
-      )),
+      repeat(choice(/[^"\\]/, /\\(.|\n)/)),
       '"',
-    ),
+    )),
 
     escape_sequence: _ => token.immediate(seq('\\', choice(
       /[\\"'rnt0]/,

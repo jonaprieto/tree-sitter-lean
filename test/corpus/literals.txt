@@ -117,9 +117,7 @@ String with escapes
 
 (module
   (check
-    term: (str_lit
-      (escape_sequence)
-      (escape_sequence))))
+    term: (str_lit)))
 
 ==============
 String gap
@@ -132,8 +130,7 @@ String gap
 
 (module
   (check
-    term: (str_lit
-      (escape_sequence))))
+    term: (str_lit)))
 
 ==============
 Raw string
